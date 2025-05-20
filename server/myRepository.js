@@ -2,7 +2,7 @@ import connectDB from "./db.js";
 
 let client;
 
-async function getCollection() {
+export async function getCollection() {
   if (!client) {
     client = await connectDB();
   }

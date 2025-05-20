@@ -1,10 +1,10 @@
+import "./db.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authenticateToken from "./authMiddleware.js";
-import { getUserByUsername, addUser } from "./myRepository.js";
-import 'dotenv/config';
+import { getUserByUsername, addUser, getCollection } from "./myRepository.js";
 import cors from 'cors';
 
 const app = express();
@@ -74,6 +74,32 @@ app.post("/api/signout", (req, res) => {
 
 app.get("/api/protected", authenticateToken, (req, res) => {
   res.json({ message: `Welcome ${req.user.username}, you have access!` });
+});
+
+app.get("/api/test", async (req, res) => {
+  console.log("Received request to /api/test");
+  try {
+    console.log("Attempting to get collection...");
+    const collection = await getCollection();
+    const documents = [];
+    for await (const doc of collection.find()) {
+      // Convert MongoDB document to plain object and remove _id
+      const plainDoc = JSON.parse(JSON.stringify(doc));
+      documents.push(plainDoc);
+      console.log('Document:', plainDoc);
+    }
+    console.log("Collection retrieved successfully");
+    res.json({ message: "Successfully connected to database", documents });
+  } catch (err) {
+    console.error("Test error:", err);
+    res.status(500).json({ message: `Error testing ${err}` });
+  }
+});
+
+// Add a test route at root to verify server is working
+app.get("/", (req, res) => {
+  console.log("Received request to root path");
+  res.json({ message: "Server is running" });
 });
 
 app.listen(port, () => {

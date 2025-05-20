@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config()
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 // Make sure these environment variables are set in your .env file
