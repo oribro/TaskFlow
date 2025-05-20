@@ -5,15 +5,23 @@ import jwt from "jsonwebtoken";
 import authenticateToken from "./authMiddleware.js";
 import { getUserByUsername, addUser } from "./myRepository.js";
 import 'dotenv/config';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Enable CORS
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true // Allow cookies
+}));
 
 app.use(express.json()); // Middleware to parse requests with JSON body
 app.use(express.static("public")); // folder to serve our static files
 app.use(cookieParser());
 
-app.post("/signup", async (req, res) => {
+// API Routes
+app.post("/api/signup", async (req, res) => {
   const { firstName, lastName, email, username, password, phone } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,7 +40,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/signin", async (req, res) => {
+app.post("/api/signin", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await getUserByUsername(username);
@@ -40,19 +48,17 @@ app.post("/signin", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    //     --- Dont forget to add JWT_SECRET in .env ---
     const token = jwt.sign(
       { username: user.username },
-      //process.env.JWT_SECRET,
-      "avokado",
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
     res
       .cookie("token", token, {
-        httpOnly: true, // Prevents JS access (recommended for security)
-        secure: false, // Set to true in production with HTTPS
-        sameSite: "lax", // Or "strict" depending on your needs
-        maxAge: 3600000, // 1 hour
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 3600000,
       })
       .json({ message: "Login successful" });
   } catch (err) {
@@ -61,13 +67,12 @@ app.post("/signin", async (req, res) => {
   }
 });
 
-app.post("/signout", (req, res) => {
+app.post("/api/signout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out" });
-  //res.redirect("/welcome.html");
 });
 
-app.get("/protected", authenticateToken, (req, res) => {
+app.get("/api/protected", authenticateToken, (req, res) => {
   res.json({ message: `Welcome ${req.user.username}, you have access!` });
 });
 
