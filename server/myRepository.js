@@ -1,13 +1,17 @@
-//import  connectDB from "./db.js";
+import connectDB from "./db.js";
+
+let client;
+
+async function getCollection() {
+  if (!client) {
+    client = await connectDB();
+  }
+  return client.db("taskflow").collection("users");
+}
 
 export async function getUserByUsername(username) {
-  //let pool = await connectDB();
-  // let result = await pool
-  //   .request()
-  //   .input("username", sql.VarChar, username)
-  //   .execute("getUserByUsername");
-
- // return result.recordset[0];
+  const collection = await getCollection();
+  return await collection.findOne({ username });
 }
 
 export async function addUser(
@@ -18,14 +22,14 @@ export async function addUser(
   hashedPassword,
   phone
 ) {
-  //let pool = await connectDB();
-  // await pool
-  //   .request()
-  //   .input("firstName", sql.VarChar, firstName)
-  //   .input("lastName", sql.VarChar, lastName)
-  //   .input("email", sql.VarChar, email)
-  //   .input("username", sql.VarChar, username)
-  //   .input("password", sql.VarChar, hashedPassword)
-  //   .input("phone", sql.VarChar, phone)
-  //   .execute("addUser");
+  const collection = await getCollection();
+  await collection.insertOne({
+    firstName,
+    lastName,
+    email,
+    username,
+    password: hashedPassword,
+    phone,
+    createdAt: new Date()
+  });
 }

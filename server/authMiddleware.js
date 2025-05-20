@@ -6,7 +6,8 @@ function authenticateToken(req, res, next) {
   if (!token) return res.status(401).json({ message: "Access denied" });
 
   //     --- Dont forget to add JWT_SECRET in .env ---
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  //jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, "avokado", (err, user) => {
     if (err) return res.status(403).json({ message: "Invalid token" });
     req.user = user;
     next();

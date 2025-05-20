@@ -43,7 +43,8 @@ app.post("/signin", async (req, res) => {
     //     --- Dont forget to add JWT_SECRET in .env ---
     const token = jwt.sign(
       { username: user.username },
-      process.env.JWT_SECRET,
+      //process.env.JWT_SECRET,
+      "avokado",
       { expiresIn: "1h" }
     );
     res
