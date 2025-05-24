@@ -25,7 +25,7 @@ function Welcome() {
                     </div>
 
                     <div className="space-y-2">
-                        <Link to="/login" className="w-full">
+                        <Link to="/signin" className="w-full">
                             <Button fullWidth className="text-indigo-600 border border-indigo-600 hover:bg-indigo-50">
                                 Sign In
                             </Button>
