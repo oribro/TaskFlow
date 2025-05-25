@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import authenticateToken from "./authMiddleware.js";
 import { getUserByUsername, addUser, getCollection } from "./myRepository.js";
 import cors from 'cors';
+import { getUserTasks, postTask, updateTask, deleteTask } from "./tasks.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -71,6 +72,84 @@ app.post("/api/signout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out" });
 });
+
+app.post("/api/tasks", authenticateToken, async (req, res) => {
+  const title = req.body.title;
+  const description = req.body.description;
+  const username = req.user.username;
+
+  console.log(title, description, username);
+
+  if (!title || !description || !username) {
+    return res.status(400).send({
+      error:
+        "title, description and username are required query parameters.",
+    });
+  }
+
+  try {
+    await postTask(title, description, username);
+    res.send("Posted task");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ error: "Failed to post task." });
+  }
+});
+
+app.get("/api/tasks", authenticateToken, async (req, res) => {
+  const username = req.user.username;
+
+  try {
+    const tasks = await getUserTasks(username);
+    for await (const doc of tasks) {
+      console.log(doc);
+    }
+    res.send("Found tasks");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ error: "Failed to get tasks." });
+  }
+});
+
+app.put("/api/tasks/:title", authenticateToken, async (req, res) => {
+  const title = req.params.title;
+  const description = req.body.description;
+
+  if (!title || !description) {
+    return res.status(400).send({
+      error:
+        "title and description are required query parameters.",
+    });
+  }
+
+  try {
+    await updateTask(title,description);
+    res.send("Updated tasks");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ error: "Failed to update tasks." });
+  }
+});
+
+app.delete("/api/tasks/:title", authenticateToken, async (req, res) => {
+  const title = req.params.title;
+
+  if (!title) {
+    return res.status(400).send({
+      error:
+        "title is a required query parameter.",
+    });
+  }
+
+  try {
+    await deleteTask(title);
+    res.send("Deleted task");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ error: "Failed to delete task." });
+  }
+});
+
 
 app.get("/api/protected", authenticateToken, (req, res) => {
   res.json({ message: `Welcome ${req.user.username}, you have access!` });

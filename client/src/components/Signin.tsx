@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import Form from './common/Form';
 import Input from './common/Input';
 import Button from './common/Button';
+import { useNavigate } from 'react-router-dom';
 
 function Signin() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -31,6 +33,7 @@ function Signin() {
 
             if (response.ok) {
                 console.log('Signin successful');
+                navigate('/board');
             } else {
                 const data = await response.json();
                 console.error('Signin failed:', data.message);
@@ -64,7 +67,7 @@ function Signin() {
             </div>
 
             <div>
-                <Button type="submit"  fullWidth>
+                <Button type="submit" fullWidth>
                     Sign In
                 </Button>
             </div>

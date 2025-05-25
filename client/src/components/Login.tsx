@@ -1,7 +1,7 @@
 import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
-import Signin from './Signin';
+//import Signin from './Signin';
 
 const Login: React.FC = () => {
   const { login, isAuthenticated, user, logout } = useAuth();
@@ -35,7 +35,6 @@ const Login: React.FC = () => {
         )}
       </div>
     </div>
-    <Signin />
     </>
   );
 };

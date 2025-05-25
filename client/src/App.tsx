@@ -6,6 +6,7 @@ import Signin from './components/Signin';
 import Login from './components/Login';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
+import { Board } from './components/Board';
 
 // Protected Route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -20,6 +21,7 @@ function AppRoutes() {
       <Route path="/" element={<Welcome />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<Signin />} />
+      <Route path="/board" element={<Board />} />
       {/* Add more routes as needed */}
     </Routes>
   );
